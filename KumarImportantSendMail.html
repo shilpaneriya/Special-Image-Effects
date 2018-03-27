@@ -1,0 +1,77 @@
+
+<!-- Splash Screen begins-->
+    <div id="boxes">
+      <div style="top: 199.5px; left: 551.5px; display: block;border: 3px solid #000;" id="dialog" class="window">
+      <div class="crossbtn close"> X </div>
+      <div class="contact-heading">Contact Us</div>
+        <div id = "formContainer">
+
+        <form method="post" id="popupForm" name="popupForm">
+            <label for="Name">Name : </label>
+            <input type="text" name="Name" id="Name" required>
+            <label for="City">City : </label>
+            <input type="text" name="City" id="City" required>
+            <label for="Email">Email : </label>
+            <input type="email" name="Email" id="Email" required>
+            <label for="Interested Property">Interested Property : </label>
+             <input type="text" name="interestedProperty" id="interestedProperty" required><br/>
+             <label for="heardFrom">How did you find us : </label>
+             <input type="radio" name="source" value="facebook" checked> <span>Facebook</span>
+             <input type="radio" name="source" value="google"> <span>Google</span>
+             <input type="radio" name="source" value="other"> <span>Other</span>
+
+            <div class="g-recaptcha" data-sitekey="6Lc09A8TAAAAACaKz2blOkqHmjRnoSUbEMjsTZlz"></div>
+            <div id="alertMessageCaptche" style="visibility: hidden">
+<!--                <p>Please fill the validation field</p>-->
+            </div>
+            <input type = "hidden" name ="access_code" value = "3e716699-875a-4416-bd1d-3fcc9731c743">
+            <input type="submit" name="submit" value="Submit" class="submit-button">
+        </form>
+
+        </div>
+        <!--<div id="popupfoot"><a href="#" class="close agree" style="color: #585757 !important;opacity: 1;float: right;font-size: 16px;">Close</a></div>-->
+      </div>
+      <div style="width: 1478px; font-size: 32pt; color:white; height: 602px; display: none; opacity: 0.8;" id="mask"></div>
+    </div>
+    <!-- Splash Screen End-->
+
+
+-----------------------------------------------------------------------
+
+
+<?php
+
+if(isset($_POST['g-recaptcha-response']) && isset($_POST['g-recaptcha-response'])) {
+
+    $secret = "6Lc09A8TAAAAABGHJa2NExGljNlTTHkjw2o95tNP";
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $captcha = $_POST['g-recaptcha-response'];
+    $rep = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secret&response=$captcha&remoteip$ip");
+    $arr = json_decode($rep, TRUE);
+
+    if ($arr['success']) {
+        $to = "akshaydeshmukh105@gmail.com";
+        $name = $_POST['Name'];
+        $email = $_POST['Email'];
+        $city = $_POST['City'];
+        $interestedProperty = $_POST['interestedProperty'];
+
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type: text/html; charset=iso-8859-1" . "\r\n";
+        $headers .= "From: $email" . "\r\n" .
+            "Reply-To: $email" . "\r\n" .
+            "X-Mailer: PHP/" . phpversion();
+
+        $body = $name . " is live in " . $city . " and intrested in " . $interestedProperty . " and his email address is " . $email;
+
+        if (@mail($to, $name, $body, $headers)) {
+            echo "Submitted Successfully..!!";
+        }else {
+            echo "Error..!";
+        }
+    }else {
+        echo "Error in Validation..!";
+    }
+}
+
+?>
